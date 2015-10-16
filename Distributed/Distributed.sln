@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Distributed.SessionProvider.Redis", "Distributed.SessionProvider.Redis\Distributed.SessionProvider.Redis.csproj", "{F4950134-B5D7-4246-9DC7-EA89D6F18F96}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Distributed.MessageQueue", "Distributed.MessageQueue\Distributed.MessageQueue.csproj", "{47D998DE-7110-4A51-A0F4-77BF8109D72A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{36215240-EC11-4D1C-9BEA-134E37B94841}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Consumer", "Samples\MessageQueue\Consumer\Consumer.csproj", "{2618163E-940E-42ED-AD59-591270802F18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Producer", "Samples\MessageQueue\Producer\Producer.csproj", "{7E517D77-16BC-47C2-A67F-D87103BC5F84}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageQueue", "MessageQueue", "{8104A8CA-3304-49A5-AFFA-3D1CA6F3DE85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SessionShared", "SessionShared", "{76179559-57EA-4E85-B940-5761874ACA45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication2", "Samples\SessionShared\WebApplication2\WebApplication2.csproj", "{02A92394-F72E-47AE-8920-1C46DA1E00AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "Samples\SessionShared\WebApplication1\WebApplication1.csproj", "{1F900822-E434-464E-A39A-6ED24BDDB048}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Release", "Release", "{F0CBDCD7-EDDE-4A72-A558-D87114AD6FE7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageQueue", "MessageQueue", "{096CB902-2233-406D-9074-6EDB0F60A9DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x86", "x86", "{9059D745-7F2A-4618-8CEC-7979D412A5CC}"
+	ProjectSection(SolutionItems) = preProject
+		Release\MessageQueue\x86\Distributed.MessageQueue.dll = Release\MessageQueue\x86\Distributed.MessageQueue.dll
+		Release\MessageQueue\x86\ManagedONS.dll = Release\MessageQueue\x86\ManagedONS.dll
+		Release\MessageQueue\x86\ONSClient4CPP.dll = Release\MessageQueue\x86\ONSClient4CPP.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x64", "x64", "{E44402E0-2080-4D25-8B6B-65782532E851}"
+	ProjectSection(SolutionItems) = preProject
+		Release\MessageQueue\x64\Distributed.MessageQueue.dll = Release\MessageQueue\x64\Distributed.MessageQueue.dll
+		Release\MessageQueue\x64\ManagedONS.dll = Release\MessageQueue\x64\ManagedONS.dll
+		Release\MessageQueue\x64\ONSClient4CPP.dll = Release\MessageQueue\x64\ONSClient4CPP.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4950134-B5D7-4246-9DC7-EA89D6F18F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4950134-B5D7-4246-9DC7-EA89D6F18F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4950134-B5D7-4246-9DC7-EA89D6F18F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4950134-B5D7-4246-9DC7-EA89D6F18F96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47D998DE-7110-4A51-A0F4-77BF8109D72A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47D998DE-7110-4A51-A0F4-77BF8109D72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47D998DE-7110-4A51-A0F4-77BF8109D72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47D998DE-7110-4A51-A0F4-77BF8109D72A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2618163E-940E-42ED-AD59-591270802F18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2618163E-940E-42ED-AD59-591270802F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2618163E-940E-42ED-AD59-591270802F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2618163E-940E-42ED-AD59-591270802F18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E517D77-16BC-47C2-A67F-D87103BC5F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E517D77-16BC-47C2-A67F-D87103BC5F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E517D77-16BC-47C2-A67F-D87103BC5F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E517D77-16BC-47C2-A67F-D87103BC5F84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02A92394-F72E-47AE-8920-1C46DA1E00AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02A92394-F72E-47AE-8920-1C46DA1E00AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02A92394-F72E-47AE-8920-1C46DA1E00AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02A92394-F72E-47AE-8920-1C46DA1E00AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F900822-E434-464E-A39A-6ED24BDDB048}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F900822-E434-464E-A39A-6ED24BDDB048}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F900822-E434-464E-A39A-6ED24BDDB048}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F900822-E434-464E-A39A-6ED24BDDB048}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2618163E-940E-42ED-AD59-591270802F18} = {8104A8CA-3304-49A5-AFFA-3D1CA6F3DE85}
+		{7E517D77-16BC-47C2-A67F-D87103BC5F84} = {8104A8CA-3304-49A5-AFFA-3D1CA6F3DE85}
+		{8104A8CA-3304-49A5-AFFA-3D1CA6F3DE85} = {36215240-EC11-4D1C-9BEA-134E37B94841}
+		{76179559-57EA-4E85-B940-5761874ACA45} = {36215240-EC11-4D1C-9BEA-134E37B94841}
+		{02A92394-F72E-47AE-8920-1C46DA1E00AB} = {76179559-57EA-4E85-B940-5761874ACA45}
+		{1F900822-E434-464E-A39A-6ED24BDDB048} = {76179559-57EA-4E85-B940-5761874ACA45}
+		{096CB902-2233-406D-9074-6EDB0F60A9DB} = {F0CBDCD7-EDDE-4A72-A558-D87114AD6FE7}
+		{9059D745-7F2A-4618-8CEC-7979D412A5CC} = {096CB902-2233-406D-9074-6EDB0F60A9DB}
+		{E44402E0-2080-4D25-8B6B-65782532E851} = {096CB902-2233-406D-9074-6EDB0F60A9DB}
+	EndGlobalSection
+EndGlobal

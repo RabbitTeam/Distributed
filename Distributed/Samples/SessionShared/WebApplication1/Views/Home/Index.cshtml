@@ -1,0 +1,29 @@
+﻿@using System.Web.Mvc.Html
+@model WebApplication1.Models.SetSessionModel
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SetSession</title>
+</head>
+<body>
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary()
+        @ViewBag.Message
+        <div>
+            @Html.LabelFor(model => model.Key):
+        </div>
+        <div>
+            @Html.EditorFor(model => model.Key)
+        </div>
+        <div>
+            @Html.LabelFor(model => model.Value):
+        </div>
+        <div>
+            @Html.EditorFor(model => model.Value)
+        </div>
+        <br />
+        <button type="submit">submit</button>
+    }
+</body>
+</html>

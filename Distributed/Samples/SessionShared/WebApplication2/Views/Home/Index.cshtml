@@ -1,0 +1,33 @@
+﻿@using System.Web.Mvc.Html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GetSession</title>
+</head>
+<body>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+    {
+        @Html.ValidationSummary()
+        var key = Request.QueryString["key"];
+        var isShowValue = key != null;
+        if (key == null)
+        {
+            key = "CurrentTime";
+        }
+        if (isShowValue)
+        {
+            <div>
+                SessionValue:@ViewBag.Value
+            </div>
+        }
+        <div>
+            Key:
+        </div>
+        <div>
+            <input type="text" name="key" value="@key" />
+        </div>
+        <br />
+        <button type="submit">get</button>
+    }
+</body>
+</html>
