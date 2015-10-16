@@ -1,0 +1,1 @@
+{"name":"分布式解决方案","tagline":"为应用程序提供分布式部署的相关支持组件。","body":"# 分布式解决方案\r\n为应用程序提供分布式部署的相关支持组件。\r\n\r\n### 现有组件：\r\n1. Distributed.SessionProvider.Redis（基于Redis的Session共享组件）\r\n2. Distributed.MessageQueue（一个抽象的消息队列，集成了Aliyun ONS <阿里云开放消息服务>）\r\n","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
