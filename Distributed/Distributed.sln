@@ -21,24 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication2", "Samples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "Samples\SessionShared\WebApplication1\WebApplication1.csproj", "{1F900822-E434-464E-A39A-6ED24BDDB048}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Release", "Release", "{F0CBDCD7-EDDE-4A72-A558-D87114AD6FE7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageQueue", "MessageQueue", "{096CB902-2233-406D-9074-6EDB0F60A9DB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x86", "x86", "{9059D745-7F2A-4618-8CEC-7979D412A5CC}"
-	ProjectSection(SolutionItems) = preProject
-		Release\MessageQueue\x86\Distributed.MessageQueue.dll = Release\MessageQueue\x86\Distributed.MessageQueue.dll
-		Release\MessageQueue\x86\ManagedONS.dll = Release\MessageQueue\x86\ManagedONS.dll
-		Release\MessageQueue\x86\ONSClient4CPP.dll = Release\MessageQueue\x86\ONSClient4CPP.dll
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "x64", "x64", "{E44402E0-2080-4D25-8B6B-65782532E851}"
-	ProjectSection(SolutionItems) = preProject
-		Release\MessageQueue\x64\Distributed.MessageQueue.dll = Release\MessageQueue\x64\Distributed.MessageQueue.dll
-		Release\MessageQueue\x64\ManagedONS.dll = Release\MessageQueue\x64\ManagedONS.dll
-		Release\MessageQueue\x64\ONSClient4CPP.dll = Release\MessageQueue\x64\ONSClient4CPP.dll
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,8 +62,5 @@ Global
 		{76179559-57EA-4E85-B940-5761874ACA45} = {36215240-EC11-4D1C-9BEA-134E37B94841}
 		{02A92394-F72E-47AE-8920-1C46DA1E00AB} = {76179559-57EA-4E85-B940-5761874ACA45}
 		{1F900822-E434-464E-A39A-6ED24BDDB048} = {76179559-57EA-4E85-B940-5761874ACA45}
-		{096CB902-2233-406D-9074-6EDB0F60A9DB} = {F0CBDCD7-EDDE-4A72-A558-D87114AD6FE7}
-		{9059D745-7F2A-4618-8CEC-7979D412A5CC} = {096CB902-2233-406D-9074-6EDB0F60A9DB}
-		{E44402E0-2080-4D25-8B6B-65782532E851} = {096CB902-2233-406D-9074-6EDB0F60A9DB}
 	EndGlobalSection
 EndGlobal
