@@ -18,7 +18,7 @@ namespace Consumer
                 var consumerId = Console.ReadLine();
                 using (var consumer = messageQueueFactory.CreateConsumer(consumerId).Result)
                 {
-                    consumer.Subscribe("Test", "*", message =>
+                    consumer.Subscribe("ChunSun", "*", message =>
                     {
                         Console.WriteLine($"topic：{message.Topic}");
                         Console.WriteLine($"key：{message.Key}");

@@ -14,7 +14,7 @@ namespace Producer
                 SecretKey = "xxxxxxxxxx"
             }))
             {
-                using (var producer = messageQueueFactory.CreateProducer("Test").Result)
+                using (var producer = messageQueueFactory.CreateProducer("ChunSun").Result)
                 {
                     producer.Start().Wait();
                     while (true)
@@ -29,7 +29,7 @@ namespace Producer
 
                         var message = new AliyunMessage
                         {
-                            Topic = "Test",
+                            Topic = "ChunSun",
                             Body = content
                         };
                         var messageId = producer.Send(message).Result;

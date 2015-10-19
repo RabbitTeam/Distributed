@@ -1,4 +1,4 @@
-﻿namespace Distributed.MessageQueue
+﻿namespace Distributed.MessageQueue.Providers.Aliyun
 {
     public sealed class AliyunMessageQueueFactoryOptions
     {
