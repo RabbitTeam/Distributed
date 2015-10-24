@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System;
-using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
@@ -15,31 +14,30 @@ namespace Distributed.SessionProvider.Redis
     {
         #region Field
 
-        private ConnectionMultiplexer _connectionMultiplexer;
-        private IDatabase _database;
+        private static readonly ConnectionMultiplexer ConnectionMultiplexer;
 
         #endregion Field
 
-        #region Overrides of SessionStateStoreProviderBase
+        #region Constructor
 
-        /// <summary>
-        /// Initializes the provider.
-        /// </summary>
-        /// <param name="name">The friendly name of the provider.</param><param name="config">A collection of the name/value pairs representing the provider-specific attributes specified in the configuration for this provider.</param><exception cref="T:System.ArgumentNullException">The name of the provider is null.</exception><exception cref="T:System.ArgumentException">The name of the provider has a length of zero.</exception><exception cref="T:System.InvalidOperationException">An attempt is made to call <see cref="M:System.Configuration.Provider.ProviderBase.Initialize(System.String,System.Collections.Specialized.NameValueCollection)"/> on a provider after the provider has already been initialized.</exception>
-        public override void Initialize(string name, NameValueCollection config)
+        static RedisSessionStateStoreProvider()
         {
-            base.Initialize(name, config);
-
-            _connectionMultiplexer = ConnectionMultiplexer.Connect(ConfigurationManager.AppSettings["RedisServer"]);
-            _database = _connectionMultiplexer.GetDatabase();
+            ConnectionMultiplexer = ConnectionMultiplexer.Connect(new ConfigurationOptions
+            {
+                EndPoints = { ConfigurationManager.AppSettings["RedisServer"] },
+                ConnectTimeout = 30 * 1000
+            });
         }
+
+        #endregion Constructor
+
+        #region Overrides of SessionStateStoreProviderBase
 
         /// <summary>
         /// Releases all resources used by the <see cref="T:System.Web.SessionState.SessionStateStoreProviderBase"/> implementation.
         /// </summary>
         public override void Dispose()
         {
-            _connectionMultiplexer.Dispose();
         }
 
         /// <summary>
@@ -107,7 +105,8 @@ namespace Distributed.SessionProvider.Redis
             if (item.Items.Count > 0)
                 sessionItems = item.Items;
 
-            RedisSessionStateStore.Create(_database, id, item.Timeout).Set(sessionItems);
+            var database = GetConnection().GetDatabase();
+            RedisSessionStateStore.Create(database, id, item.Timeout).Set(sessionItems);
         }
 
         /// <summary>
@@ -116,7 +115,8 @@ namespace Distributed.SessionProvider.Redis
         /// <param name="context">The <see cref="T:System.Web.HttpContext"/> for the current request.</param><param name="id">The session identifier for the current request.</param><param name="lockId">The lock identifier for the current request.</param><param name="item">The <see cref="T:System.Web.SessionState.SessionStateStoreData"/> that represents the item to delete from the data store.</param>
         public override void RemoveItem(HttpContext context, string id, object lockId, SessionStateStoreData item)
         {
-            RedisSessionStateStore.Delete(_database, id);
+            var database = GetConnection().GetDatabase();
+            RedisSessionStateStore.Delete(database, id);
         }
 
         /// <summary>
@@ -145,7 +145,8 @@ namespace Distributed.SessionProvider.Redis
         /// <param name="context">The <see cref="T:System.Web.HttpContext"/> for the current request.</param><param name="id">The <see cref="P:System.Web.SessionState.HttpSessionState.SessionID"/> for the current request.</param><param name="timeout">The session <see cref="P:System.Web.SessionState.HttpSessionState.Timeout"/> for the current request.</param>
         public override void CreateUninitializedItem(HttpContext context, string id, int timeout)
         {
-            RedisSessionStateStore.Create(_database, id, timeout);
+            var database = GetConnection().GetDatabase();
+            RedisSessionStateStore.Create(database, id, timeout);
         }
 
         /// <summary>
@@ -159,6 +160,11 @@ namespace Distributed.SessionProvider.Redis
         #endregion Overrides of SessionStateStoreProviderBase
 
         #region Private Method
+
+        private static ConnectionMultiplexer GetConnection()
+        {
+            return ConnectionMultiplexer;
+        }
 
         private static SessionStateStoreData CreateLegitStoreData(HttpContext context, ISessionStateItemCollection sessionItems, HttpStaticObjectsCollection staticObjects, int timeout)
         {
@@ -175,11 +181,12 @@ namespace Distributed.SessionProvider.Redis
             lockId = null;
             lockAge = TimeSpan.Zero;
             actionFlags = SessionStateActions.None;
-            var state = RedisSessionStateStore.Get(_database, id);
+            var database = GetConnection().GetDatabase();
+            var state = RedisSessionStateStore.Get(database, id);
             if (state == null)
                 return null;
             state.UpdateExpire();
-            return CreateLegitStoreData(context, state.GetSessionStateItemCollection(), new HttpStaticObjectsCollection(), (int)state.Timeout.TotalMinutes);
+            return CreateLegitStoreData(context, state.GetSessionStateItemCollection(), null, (int)state.Timeout.TotalMinutes);
         }
 
         #endregion Private Method
