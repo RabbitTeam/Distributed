@@ -28,7 +28,6 @@ namespace Distributed.SessionProvider.Memcached
                 var configuration = new MemcachedClientConfiguration();
                 configuration.AddServer(ConfigurationManager.AppSettings["MemcachedServerAddress"]);
                 configuration.Protocol = MemcachedProtocol.Binary;
-                configuration.Authentication.Type = typeof(PlainTextAuthenticator);
                 return new MemcachedClient(configuration);
             });
         }
