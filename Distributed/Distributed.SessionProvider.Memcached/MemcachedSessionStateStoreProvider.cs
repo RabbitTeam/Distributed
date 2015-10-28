@@ -16,6 +16,7 @@ namespace Distributed.SessionProvider.Memcached
         #region Field
 
         private static readonly Lazy<MemcachedClient> MemcachedClient;
+        private static readonly string SessionKey;
 
         #endregion Field
 
@@ -23,6 +24,7 @@ namespace Distributed.SessionProvider.Memcached
 
         static MemcachedSessionStateStoreProvider()
         {
+            SessionKey = ConfigurationManager.AppSettings["MemcachedSessionKey"] ?? "MemcachedSession";
             MemcachedClient = new Lazy<MemcachedClient>(() =>
             {
                 var configuration = new MemcachedClientConfiguration();
@@ -282,12 +284,12 @@ namespace Distributed.SessionProvider.Memcached
 
             private Dictionary<string, SessionEntry> GetDictionary()
             {
-                return _client.Get<Dictionary<string, SessionEntry>>("ChunSunSessions") ?? new Dictionary<string, SessionEntry>();
+                return _client.Get<Dictionary<string, SessionEntry>>(SessionKey) ?? new Dictionary<string, SessionEntry>();
             }
 
             private void Save(Dictionary<string, SessionEntry> dictionary)
             {
-                _client.Store(StoreMode.Set, "ChunSunSessions", dictionary, TimeSpan.FromMinutes(1));
+                _client.Store(StoreMode.Set, SessionKey, dictionary, TimeSpan.FromMinutes(1));
             }
 
             public void Set(string id, int timeout, ISessionStateItemCollection sessionStateItemCollection)
