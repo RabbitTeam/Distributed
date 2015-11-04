@@ -327,11 +327,8 @@ namespace Distributed.SessionProvider.Memcached
             private void Save(IDictionary<string, SessionEntry> dictionary)
             {
                 //过滤掉过期的session条目。
-                foreach (var item in dictionary.Where(item => item.Value.IsExpired()))
-                {
-                    dictionary.Remove(item.Key);
-                }
-                //                dictionary = dictionary.Where(i => !i.Value.IsExpired()).ToDictionary(i => i.Key, i => i.Value);
+                foreach (var key in dictionary.Where(item => item.Value.IsExpired()).Select(i=>i.Key).ToArray())
+                    dictionary.Remove(key);
 
                 _client.Store(StoreMode.Set, SessionKey, dictionary);
             }
