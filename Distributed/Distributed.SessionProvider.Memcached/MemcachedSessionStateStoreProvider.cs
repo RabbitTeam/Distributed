@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Linq;
 using System.Web;
 using System.Web.SessionState;
 
@@ -201,12 +202,24 @@ namespace Distributed.SessionProvider.Memcached
 
                 public SessionEntry(int timeout)
                 {
+                    LastUpdateTime = DateTime.Now;
                     Timeout = timeout;
                     Dictionary = new Dictionary<string, string>();
                 }
 
+                public DateTime LastUpdateTime { get; set; }
                 public int Timeout { get; set; }
                 public IDictionary<string, string> Dictionary { get; set; }
+
+                public bool IsExpired()
+                {
+                    return LastUpdateTime.Add(TimeSpan.FromMinutes(Timeout)) <= DateTime.Now;
+                }
+
+                public void Update()
+                {
+                    LastUpdateTime = DateTime.Now;
+                }
             }
 
             public sealed class DataItem
@@ -268,6 +281,11 @@ namespace Distributed.SessionProvider.Memcached
                 ISessionStateItemCollection sessionStateItemCollection = new SessionStateItemCollection();
                 if (sessionDictionary.TryGetValue(id, out sessionEntry))
                 {
+                    //更新session的过期时间。
+                    sessionEntry.Update();
+                    //持久化session信息。
+                    Save(sessionDictionary);
+
                     foreach (var entry in sessionEntry.Dictionary)
                     {
                         var item = DataItem.Create(entry.Value);
@@ -282,24 +300,12 @@ namespace Distributed.SessionProvider.Memcached
                 return sessionStateItemCollection;
             }
 
-            private Dictionary<string, SessionEntry> GetDictionary()
-            {
-                return _client.Get<Dictionary<string, SessionEntry>>(SessionKey) ?? new Dictionary<string, SessionEntry>();
-            }
-
-            private void Save(Dictionary<string, SessionEntry> dictionary)
-            {
-                _client.Store(StoreMode.Set, SessionKey, dictionary, TimeSpan.FromMinutes(1));
-            }
-
             public void Set(string id, int timeout, ISessionStateItemCollection sessionStateItemCollection)
             {
                 var dictionary = GetDictionary();
                 var entry = dictionary[id] = new SessionEntry(timeout);
                 foreach (string key in sessionStateItemCollection.Keys)
-                {
                     entry.Dictionary[key] = new DataItem(sessionStateItemCollection[key]).Serialize();
-                }
                 Save(dictionary);
             }
 
@@ -310,6 +316,27 @@ namespace Distributed.SessionProvider.Memcached
                     dictionary.Remove(id);
                 Save(dictionary);
             }
+
+            #region Private Method
+
+            private Dictionary<string, SessionEntry> GetDictionary()
+            {
+                return _client.Get<Dictionary<string, SessionEntry>>(SessionKey) ?? new Dictionary<string, SessionEntry>();
+            }
+
+            private void Save(IDictionary<string, SessionEntry> dictionary)
+            {
+                //过滤掉过期的session条目。
+                foreach (var item in dictionary.Where(item => item.Value.IsExpired()))
+                {
+                    dictionary.Remove(item.Key);
+                }
+                //                dictionary = dictionary.Where(i => !i.Value.IsExpired()).ToDictionary(i => i.Key, i => i.Value);
+
+                _client.Store(StoreMode.Set, SessionKey, dictionary);
+            }
+
+            #endregion Private Method
         }
 
         #endregion Help Class
