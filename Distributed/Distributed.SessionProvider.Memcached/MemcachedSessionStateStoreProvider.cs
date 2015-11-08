@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
 using System.Web;
 using System.Web.SessionState;
 
@@ -202,135 +201,116 @@ namespace Distributed.SessionProvider.Memcached
 
                 public SessionEntry(int timeout)
                 {
-                    LastUpdateTime = DateTime.Now;
                     Timeout = timeout;
-                    Dictionary = new Dictionary<string, string>();
+                    Dictionary = new Dictionary<string, DataItem>();
                 }
 
-                public DateTime LastUpdateTime { get; set; }
                 public int Timeout { get; set; }
-                public IDictionary<string, string> Dictionary { get; set; }
+                public IDictionary<string, DataItem> Dictionary { get; set; }
 
-                public bool IsExpired()
+                [Serializable]
+                public sealed class DataItem
                 {
-                    return LastUpdateTime.Add(TimeSpan.FromMinutes(Timeout)) <= DateTime.Now;
-                }
-
-                public void Update()
-                {
-                    LastUpdateTime = DateTime.Now;
-                }
-            }
-
-            public sealed class DataItem
-            {
-                public DataItem(object value)
-                {
-                    if (value == null)
-                        return;
-                    Json = JsonConvert.SerializeObject(value);
-                    var type = value.GetType();
-                    AssemblyQualifiedName = type.AssemblyQualifiedName;
-                }
-
-                /// <summary>
-                /// 对象Json序列化后的内容。
-                /// </summary>
-                public string Json { get; set; }
-
-                /// <summary>
-                /// 对象类型的程序集限定名。
-                /// </summary>
-                public string AssemblyQualifiedName { get; set; }
-
-                public string Serialize()
-                {
-                    return JsonConvert.SerializeObject(this);
-                }
-
-                /// <summary>
-                /// 反序列化。
-                /// </summary>
-                /// <returns>对象实例。</returns>
-                public object Deserialize()
-                {
-                    if (string.IsNullOrEmpty(AssemblyQualifiedName) || string.IsNullOrEmpty(Json))
-                        return null;
-
-                    try
+                    public DataItem(object value)
                     {
-                        return JsonConvert.DeserializeObject(Json, Type.GetType(AssemblyQualifiedName));
+                        if (value == null)
+                            return;
+                        Json = JsonConvert.SerializeObject(value);
+                        var type = value.GetType();
+                        AssemblyQualifiedName = type.AssemblyQualifiedName;
                     }
-                    catch (Exception exception)
-                    {
-                        Debug.WriteLine($"反序列化Session中的对象发送了错误，{exception.Message}。");
-                        return null;
-                    }
-                }
 
-                public static DataItem Create(string json)
-                {
-                    return JsonConvert.DeserializeObject<DataItem>(json);
+                    /// <summary>
+                    /// 对象Json序列化后的内容。
+                    /// </summary>
+                    public string Json { get; set; }
+
+                    /// <summary>
+                    /// 对象类型的程序集限定名。
+                    /// </summary>
+                    public string AssemblyQualifiedName { get; set; }
+
+                    public string Serialize()
+                    {
+                        return JsonConvert.SerializeObject(this);
+                    }
+
+                    /// <summary>
+                    /// 反序列化。
+                    /// </summary>
+                    /// <returns>对象实例。</returns>
+                    public object Deserialize()
+                    {
+                        if (String.IsNullOrEmpty(AssemblyQualifiedName) || String.IsNullOrEmpty(Json))
+                            return null;
+
+                        try
+                        {
+                            return JsonConvert.DeserializeObject(Json, Type.GetType(AssemblyQualifiedName));
+                        }
+                        catch (Exception exception)
+                        {
+                            Debug.WriteLine($"反序列化Session中的对象发送了错误，{exception.Message}。");
+                            return null;
+                        }
+                    }
+
+                    public static DataItem Create(string json)
+                    {
+                        return JsonConvert.DeserializeObject<DataItem>(json);
+                    }
                 }
             }
 
             public ISessionStateItemCollection Get(string id, out int timeout)
             {
-                var sessionDictionary = GetDictionary();
-                SessionEntry sessionEntry;
-                ISessionStateItemCollection sessionStateItemCollection = new SessionStateItemCollection();
-                if (sessionDictionary.TryGetValue(id, out sessionEntry))
-                {
-                    //更新session的过期时间。
-                    sessionEntry.Update();
-                    //持久化session信息。
-                    Save(sessionDictionary);
+                var key = GetKey(id);
+                var entry = _client.Get<SessionEntry>(key);
 
-                    foreach (var entry in sessionEntry.Dictionary)
-                    {
-                        var item = DataItem.Create(entry.Value);
-                        sessionStateItemCollection[entry.Key] = item.Deserialize();
-                    }
+                ISessionStateItemCollection sessionStateItemCollection = new SessionStateItemCollection();
+
+                if (entry == null)
+                {
+                    entry = new SessionEntry();
                 }
                 else
                 {
-                    sessionEntry = new SessionEntry();
+                    foreach (var item in entry.Dictionary)
+                    {
+                        sessionStateItemCollection[item.Key] = item.Value.Deserialize();
+                    }
                 }
-                timeout = sessionEntry.Timeout;
+
+                timeout = entry.Timeout;
+
+                //更新过期时间。
+                _client.Store(StoreMode.Set, key, entry, TimeSpan.FromMinutes(timeout));
+
                 return sessionStateItemCollection;
             }
 
             public void Set(string id, int timeout, ISessionStateItemCollection sessionStateItemCollection)
             {
-                var dictionary = GetDictionary();
-                var entry = dictionary[id] = new SessionEntry(timeout);
+                var sessionKey = GetKey(id);
+                var entry = _client.Get<SessionEntry>(sessionKey) ?? new SessionEntry(timeout);
+
                 foreach (string key in sessionStateItemCollection.Keys)
-                    entry.Dictionary[key] = new DataItem(sessionStateItemCollection[key]).Serialize();
-                Save(dictionary);
+                    entry.Dictionary[key] = new SessionEntry.DataItem(sessionStateItemCollection[key]);
+
+                //保存。
+                _client.Store(StoreMode.Set, sessionKey, entry, TimeSpan.FromMinutes(timeout));
             }
 
             public void Delete(string id)
             {
-                var dictionary = GetDictionary();
-                if (dictionary.ContainsKey(id))
-                    dictionary.Remove(id);
-                Save(dictionary);
+                _client.Remove(GetKey(id));
             }
 
             #region Private Method
 
-            private Dictionary<string, SessionEntry> GetDictionary()
+            private static string GetKey(string sessionId)
             {
-                return _client.Get<Dictionary<string, SessionEntry>>(SessionKey) ?? new Dictionary<string, SessionEntry>();
-            }
-
-            private void Save(IDictionary<string, SessionEntry> dictionary)
-            {
-                //过滤掉过期的session条目。
-                foreach (var key in dictionary.Where(item => item.Value.IsExpired()).Select(i=>i.Key).ToArray())
-                    dictionary.Remove(key);
-
-                _client.Store(StoreMode.Set, SessionKey, dictionary);
+                return SessionKey + "_" + sessionId;
             }
 
             #endregion Private Method
