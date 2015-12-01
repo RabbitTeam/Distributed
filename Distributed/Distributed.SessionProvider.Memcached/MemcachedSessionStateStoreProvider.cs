@@ -241,7 +241,7 @@ namespace Distributed.SessionProvider.Memcached
                     /// <returns>对象实例。</returns>
                     public object Deserialize()
                     {
-                        if (String.IsNullOrEmpty(AssemblyQualifiedName) || String.IsNullOrEmpty(Json))
+                        if (string.IsNullOrEmpty(AssemblyQualifiedName) || string.IsNullOrEmpty(Json))
                             return null;
 
                         try
